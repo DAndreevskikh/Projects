@@ -1,41 +1,39 @@
 class Station
-     attr_reader :name, :trains
+  attr_reader :name, :trains
 
-    def initialize(name)
-      @name = name
-      @trains = []
-    end
+  def initialize(name)
+    @name = name
+    @trains = []
+  end
 
-    def take_the_train(train)
-      @trains << train
-    end
+  def take_the_train(train)
+    @trains << train
+  end
 
-    def delete_train(train)
-      @trains.delete(train)
-    end
+  def delete_train(train)
+    @trains.delete(train)
+  end
 
-   def train_by_type(type)
-    @trains.select{ |train| train.type == type}
-   end
+  def trains_by_type(type)
+    @trains.select { |train| train.type == type }
+  end
 end
 
-
 class Route
-  attr_reader :station
+  attr_reader :stations
 
-  def initialize(starting_station, end_station)
-    @station = [starting_station, end_station]
+  def initialize(start_station, end_station)
+    @stations = [start_station, end_station]
   end
 
   def add_station(station)
-    @station.insert(-2, station)
+    @stations.insert(-2, station)
   end
 
-    def delete_station(station)
-      @station.delete(station) unless [@station.first, @station.last].include?(station)
-    end
+  def delete_station(station)
+    @stations.delete(station) unless [@stations.first, @stations.last].include?(station)
+  end
 end
-
 
 class Train
   attr_reader :number, :type, :wagons, :speed, :current_station, :route
@@ -51,62 +49,58 @@ class Train
     @speed += speed
   end
 
-  def break(speed)
+  def brake(speed)
     @speed -= speed
-    if @speed.negative?
-       @speed = 0
-    end
+    @speed = 0 if @speed.negative?
   end
 
   def attach_wagons(wagons)
     if @speed > 0
-      puts "Slow Down!!"
-    else @speed.zero?
+      puts "Slow Down!"
+    else
       @wagons += wagons
     end
   end
 
- def unhook_wagons(wagons)
-  if @speed > 0
-      puts "Slow Down!!"
-    else @speed.zero?
+  def unhook_wagons(wagons)
+    if @speed > 0
+      puts "Slow Down!"
+    else
       @wagons -= wagons
+    end
   end
- end
 
   def set_route(route)
     @route = route
     @current_station_index = 0
-    current_station.add_train(self)
+    current_station.take_the_train(self)
   end
-end
 
-  def move_forvard
+  def move_forward
     return unless next_station
-    current_station.remove_train(self)
+
+    current_station.delete_train(self)
     @current_station_index += 1
-    current_station.add_train(self)
+    current_station.take_the_train(self)
   end
 
- def current_station
-   route.station[@current_station_index]
- end
+  def move_backward
+    return unless previous_station
+
+    current_station.delete_train(self)
+    @current_station_index -= 1
+    current_station.take_the_train(self)
+  end
+
+  def current_station
+    route.stations[@current_station_index]
+  end
 
   def previous_station
-  route.station[@current_station_index - 1]
-  if @current_station_index.positive?
+    route.stations[@current_station_index - 1] if @current_station_index.positive?
   end
 
   def next_station
-    route.station[@current_station_index + 1]
-    if @current_station_index < route.station.size - 1
-    end
-
-    def move_backward
-      return unless previous_station
-      current_station.remove_train(self)
-      @current_station -= 1
-      current_station.add_train(self)
-    end
+    route.stations[@current_station_index + 1] if @current_station_index < route.stations.size - 1
   end
-  end
+end
