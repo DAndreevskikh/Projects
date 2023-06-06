@@ -3,18 +3,18 @@ class Station
 
   def initialize(name)
     @name = name
-    @trains = []
+    @trains = [] # Массив для хранения поездов, находящихся на станции
   end
-
-  def take_the_train(train)
-    trains << train
+  # Принимает поезд на станцию
+  def take_train(train)
+    @trains << train
   end
-
+  # Удаляет поезд из списка поездов на станции
   def delete_train(train)
-    trains.delete(train)
+    @trains.delete(train)
   end
-
+  # Возвращает список поездов на станции по типу
   def trains_by_type(type)
-    trains.select { |train| train.type == type }
+    @trains.select { |train| train.type == type }
   end
 end

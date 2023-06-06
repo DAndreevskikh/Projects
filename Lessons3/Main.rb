@@ -9,180 +9,272 @@ require_relative 'CargoWagon'
 
 class Main
   def initialize
-    @stations = []
-    @trains = []
-    @routes = []
-  end
-
-  def create_station
-    puts 'Enter the name of the station:'
-    name = gets.chomp
-    station = Station.new(name)
-    @stations << station
-    puts "Station '#{name}' has been created."
-  end
-
-  def create_train
-    puts 'Enter the train number:'
-    number = gets.chomp
-    puts 'Enter the train type (passenger or cargo):'
-    type = gets.chomp.to_sym
-    train = if type == :passenger
-              PassengerTrain.new(number)
-            elsif type == :cargo
-              CargoTrain.new(number)
-            else
-              puts 'Invalid train type.'
-            end
-    @trains << train if train
-    puts "Train '#{number}' of type '#{type}' has been created."
-  end
-
-  def create_route
-    puts 'Enter the starting station:'
-    starting_station = gets.chomp
-    puts 'Enter the ending station:'
-    end_station = gets.chomp
-    route = Route.new(starting_station, end_station)
-    @routes << route
-    puts 'Route has been created.'
-  end
-
-  def manage_route(route)
-    puts 'Enter the number of the action:'
-    puts '1. Add a station'
-    puts '2. Delete a station'
-    action = gets.chomp.to_i
-    case action
-    when 1
-      puts 'Enter the name of the station to add:'
-      station = gets.chomp
-      route.add_station(station)
-      puts "Station '#{station}' has been added to the route."
-    when 2
-      puts 'Enter the name of the station to delete:'
-      station = gets.chomp
-      route.delete_station(station)
-      puts "Station '#{station}' has been deleted from the route."
-    else
-      puts 'Invalid action.'
-    end
-  end
-
-  def assign_route(train, route)
-    train.set_route(route)
-    puts 'Route has been assigned to the train.'
-  end
-
-  def attach_wagon(train)
-    wagon = if train.type == :passenger
-              PassengerWagon.new
-            elsif train.type == :cargo
-              CargoWagon.new
-            else
-              puts 'Invalid train type.'
-            end
-    train.attach_wagon(wagon) if wagon
-    puts 'Wagon has been attached to the train.'
-  end
-
-  def detach_wagon(train)
-    wagon = train.detach_wagon
-    puts 'Wagon has been detached from the train.' if wagon
-  end
-
-  def move_forward(train)
-    train.move_forward
-    puts 'Train has moved forward on the route.'
-  end
-
-  def move_backward(train)
-    train.move_backward
-    puts 'Train has moved backward on the route.'
-  end
-
-  def display_stations
-    @stations.each do |station|
-      puts "Station: #{station.name}"
-      puts 'Trains at the station:'
-      station.trains.each do |train|
-        puts "Train: #{train.number}, Type: #{train.type}"
-      end
-    end
-  end
-
-  def display_trains_on_station(station)
-    puts "Station: #{station.name}"
-    puts 'Trains at the station:'
-    station.trains.each do |train|
-      puts "Train: #{train.number}, Type: #{train.type}"
-    end
+    @stations = []  # Массив для хранения станций
+    @trains = []  # Массив для хранения поездов
+    @routes = []  # Массив для хранения маршрутов
   end
 
   def start
     loop do
-      puts 'Enter the number of the action:'
-      puts '1. Create a station'
-      puts '2. Create a train'
-      puts '3. Create a route and manage stations'
-      puts '4. Assign a route to a train'
-      puts '5. Attach a wagon to a train'
-      puts '6. Detach a wagon from a train'
-      puts '7. Move a train forward on the route'
-      puts '8. Move a train backward on the route'
-      puts '9. Display list of stations and trains on them'
-      puts '10. Exit'
-      print "You are the choice:  "
+      show_menu
       action = gets.chomp.to_i
-
-      if (1..10).include?(action)
-      case action
-      when 1
-        create_station
-      when 2
-        create_train
-      when 3
-        create_route
-      when 4
-        puts 'Enter the train number:'
-        train_number = gets.chomp
-        train = @trains.find { |t| t.number == train_number }
-        puts 'Enter the route number:'
-        route_number = gets.chomp
-        route = @routes.find { |r| r.number == route_number }
-        assign_route(train, route) if train && route
-      when 5
-        puts 'Enter the train number:'
-        train_number = gets.chomp
-        train = @trains.find { |t| t.number == train_number }
-        attach_wagon(train) if train
-      when 6
-        puts 'Enter the train number:'
-        train_number = gets.chomp
-        train = @trains.find { |t| t.number == train_number }
-        detach_wagon(train) if train
-      when 7
-        puts 'Enter the train number:'
-        train_number = gets.chomp
-        train = @trains.find { |t| t.number == train_number }
-        move_forward(train) if train
-      when 8
-        puts 'Enter the train number:'
-        train_number = gets.chomp
-        train = @trains.find { |t| t.number == train_number }
-        move_backward(train) if train
-      when 9
-        display_stations
-      when 10
-        break
-      else
-        puts 'Invalid action.'
-      end
-      else
-    puts "Invalid choice. Please enter a number from 1 to 10."
-   end
+      take_action(action)
+    end
   end
- end
+
+  protected
+  # Выводит меню пользователю
+  def show_menu
+    puts "Enter the number of the action:"
+    puts "1. Create a station"
+    puts "2. Create a train"
+    puts "3. Create a route and manage stations"
+    puts "4. Assign a route to a train"
+    puts "5. Attach a wagon to a train"
+    puts "6. Detach a wagon from a train"
+    puts "7. Move a train forward on the route"
+    puts "8. Move a train backward on the route"
+    puts "9. Display list of stations and trains on them"
+    puts "10. Exit"
+    print "Your choice: "
+  end
+  # Выполняет действие на основе выбора пользователя
+  def take_action(action)
+    case action
+    when 1
+      create_station
+    when 2
+      create_train
+    when 3
+      create_route
+    when 4
+      assign_route_to_train
+    when 5
+      attach_wagon_to_train
+    when 6
+      detach_wagon_from_train
+    when 7
+      move_train_forward
+    when 8
+      move_train_backward
+    when 9
+      display_stations_and_trains
+    when 10
+      exit
+    else
+      puts "Invalid action. Please try again."
+    end
+  end
+  # Создает новую станцию и добавляет ее в массив станций
+  def create_station
+    puts "Enter the name of the station: "
+    name = gets.chomp
+    station = Station.new(name)
+    @stations << station
+    puts "Station #{name} has been created."
+  end
+  # Создает новый поезд и добавляет его в массив поездов
+  def create_train
+  puts "Enter the number of the train: "
+  number = gets.chomp
+
+  if number.match?(/^\d+$/) #Проверка ввода для номера поезда, в отсутсвии букв.
+    puts "Select the type of the train:"
+    puts "1. Passenger"
+    puts "2. Cargo"
+
+    type_choice = gets.chomp.to_i
+    if [1, 2].include?(type_choice)
+      type = (type_choice == 1) ? :passenger : :cargo
+      train = Train.new(number, type)
+      @trains << train
+      puts "Train #{number} of type #{type} has been created."
+    else
+      puts "Invalid input. Please enter 1 for passenger train or 2 for cargo train."
+    end
+  else
+    puts "Invalid input. The train number should contain only digits."
+  end
+end
+  # Создает новый маршрут и добавляет его в массив маршрутов
+  def create_route
+    if @stations.size < 2
+      puts "Not enough stations to create a route. Please create at least 2 stations."
+      return
+    end
+
+    puts "Available stations:"
+    @stations.each_with_index do |station, index|
+      puts "#{index + 1}. #{station.name}"
+    end
+
+    print "Enter the index of the start station: "
+    start_index = gets.chomp.to_i - 1
+
+    print "Enter the index of the end station: "
+    end_index = gets.chomp.to_i - 1
+
+    start_station = @stations[start_index]
+    end_station = @stations[end_index]
+
+    route = Route.new(start_station, end_station)
+    @routes << route
+
+    puts "Route from #{start_station.name} to #{end_station.name} has been created."
+  end
+    # Назначает маршрут поезду
+  def assign_route_to_train
+    if @trains.empty?
+      puts "No trains available. Please create a train first."
+      return
+    end
+
+    if @routes.empty?
+      puts "No routes available. Please create a route first."
+      return
+    end
+
+    puts "Available trains:"
+    @trains.each do |train|
+      puts "Train: #{train.number}, Type: #{train.type}"
+    end
+
+    print "Enter the number of the train: "
+    train_number = gets.chomp
+
+    train = @trains.find { |t| t.number == train_number }
+    if train.nil?
+      puts "Train with number #{train_number} does not exist."
+      return
+    end
+
+    puts "Available routes:"
+    @routes.each_with_index do |route, index|
+      puts "#{index + 1}. #{route.start_station.name} - #{route.end_station.name}"
+    end
+
+    print "Enter the index of the route: "
+    route_index = gets.chomp.to_i - 1
+
+    route = @routes[route_index]
+    train.set_route(route)
+
+    puts "Route has been assigned to the train."
+  end
+   # Прицепляет вагон к поезду
+  def attach_wagon_to_train
+    train = select_train
+
+    if train
+      print "Enter the type of the wagon (1 for passenger wagon, 2 for cargo wagon): "
+      wagon_type = gets.chomp.to_i
+
+      case wagon_type
+      when 1
+        wagon = PassengerWagon.new
+        train.attach_wagon(wagon)
+        puts "Passenger wagon has been attached to the train."
+      when 2
+        wagon = CargoWagon.new
+        train.attach_wagon(wagon)
+        puts "Cargo wagon has been attached to the train."
+      else
+        puts "Invalid wagon type."
+      end
+    end
+  end
+  # Отсоединяет вагон от поезда
+  def detach_wagon_from_train
+    train = select_train
+
+    if train
+      train.detach_wagon
+      puts "Wagon has been detached from the train."
+    end
+  end
+  # Перемещает поезд вперед по маршруту
+  def move_train_forward
+  train = select_train
+
+  if train
+    if train.next_station
+      train.move_forward
+      puts "Train has been moved forward."
+    else
+      puts "Train is already at the last station on the route."
+    end
+  end
+end
+# Перемещает поезд назад по маршруту
+def move_train_backward
+  train = select_train
+  if train
+    if train.previous_station
+      train.move_backward
+      puts "Train has been moved backward."
+    else
+      puts "Train is already at the first station on the route."
+    end
+  end
+end
+  # Выводит список станций и поездов на них
+  def display_stations_and_trains
+    @stations.each do |station|
+      puts "Station: #{station.name}"
+      station.trains.each do |train|
+        puts "Train: #{train.number}, type: #{train.type}, wagons: #{train.wagons.size}"
+      end
+      puts ""
+    end
+  end
+   # Находит станцию по имени
+  def find_station_by_name(name)
+    @stations.find { |station| station.name == name }
+  end
+  # Выбирает поезд из массива по его номеру
+  def select_train
+    print "Enter the number of the train: "
+    train_number = gets.chomp
+    train = @trains.find { |train| train.number == train_number }
+
+    unless train
+      puts "Train not found."
+      return nil
+    end
+
+    train
+  end
+   # Выбирает маршрут из массива по его индексу
+  def select_route
+    print "Enter the index of the route: "
+    route_index = gets.chomp.to_i
+    route = @routes[route_index]
+
+    unless route
+      puts "Route not found."
+      return nil
+    end
+
+    route
+  end
+   # Добавляет станцию к маршруту
+  def add_station_to_route(route)
+    loop do
+      print "Enter the name of the station to add to the route (or 'done' to finish): "
+      station_name = gets.chomp
+
+      break if station_name.downcase == 'done'
+
+      station = find_station_by_name(station_name)
+
+      if station
+        route.add_station(station)
+        puts "Station #{station_name} has been added to the route."
+      else
+        puts "Station not found."
+      end
+    end
+  end
 end
 
 main = Main.new
