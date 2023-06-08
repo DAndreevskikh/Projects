@@ -13,8 +13,6 @@ class Route
     @stations.last
   end
 
-  protected #В данном случае, используется  для удаления станции, и предполагается, что этот метод может быть использован в методах класса и подклассов.
-
  def delete_station(station)
     @stations.delete(station) # Удаляет указанную станцию из маршрута
   end

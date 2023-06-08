@@ -1,11 +1,11 @@
-require_relative 'Train'
-require_relative 'Wagon'
-require_relative 'Route'
-require_relative 'Station'
-require_relative 'PassengerTrain'
-require_relative 'CargoTrain'
-require_relative 'PassengerWagon'
-require_relative 'CargoWagon'
+require_relative 'train'
+require_relative 'wagon'
+require_relative 'route'
+require_relative 'station'
+require_relative 'passenger_train'
+require_relative 'cargo_train'
+require_relative 'passenger_wagon'
+require_relative 'cargo_wagon'
 
 class Main
   def initialize
@@ -23,6 +23,7 @@ class Main
   end
 
   protected
+
   # Выводит меню пользователю
   def show_menu
     puts "Enter the number of the action:"
@@ -38,6 +39,7 @@ class Main
     puts "10. Exit"
     print "Your choice: "
   end
+
   # Выполняет действие на основе выбора пользователя
   def take_action(action)
     case action
@@ -65,6 +67,7 @@ class Main
       puts "Invalid action. Please try again."
     end
   end
+
   # Создает новую станцию и добавляет ее в массив станций
   def create_station
     puts "Enter the name of the station: "
@@ -73,29 +76,31 @@ class Main
     @stations << station
     puts "Station #{name} has been created."
   end
+
   # Создает новый поезд и добавляет его в массив поездов
   def create_train
-  puts "Enter the number of the train: "
-  number = gets.chomp
+    puts "Enter the number of the train: "
+    number = gets.chomp
 
-  if number.match?(/^\d+$/) #Проверка ввода для номера поезда, в отсутсвии букв.
-    puts "Select the type of the train:"
-    puts "1. Passenger"
-    puts "2. Cargo"
+    if number.match?(/^\d+$/) # Проверка ввода для номера поезда, в отсутствии букв.
+      puts "Select the type of the train:"
+      puts "1. Passenger"
+      puts "2. Cargo"
 
-    type_choice = gets.chomp.to_i
-    if [1, 2].include?(type_choice)
-      type = (type_choice == 1) ? :passenger : :cargo
-      train = Train.new(number, type)
-      @trains << train
-      puts "Train #{number} of type #{type} has been created."
+      type_choice = gets.chomp.to_i
+      if [1, 2].include?(type_choice)
+        type = (type_choice == 1) ? :passenger : :cargo
+        train = Train.new(number, type)
+        @trains << train
+        puts "Train #{number} of type #{type} has been created."
+      else
+        puts "Invalid input. Please enter 1 for passenger train or 2 for cargo train."
+      end
     else
-      puts "Invalid input. Please enter 1 for passenger train or 2 for cargo train."
+      puts "Invalid input. The train number should contain only digits."
     end
-  else
-    puts "Invalid input. The train number should contain only digits."
   end
-end
+
   # Создает новый маршрут и добавляет его в массив маршрутов
   def create_route
     if @stations.size < 2
@@ -122,7 +127,8 @@ end
 
     puts "Route from #{start_station.name} to #{end_station.name} has been created."
   end
-    # Назначает маршрут поезду
+
+  # Назначает маршрут поезду
   def assign_route_to_train
     if @trains.empty?
       puts "No trains available. Please create a train first."
@@ -161,7 +167,8 @@ end
 
     puts "Route has been assigned to the train."
   end
-   # Прицепляет вагон к поезду
+
+  # Прицепляет вагон к поезду
   def attach_wagon_to_train
     train = select_train
 
@@ -183,6 +190,7 @@ end
       end
     end
   end
+
   # Отсоединяет вагон от поезда
   def detach_wagon_from_train
     train = select_train
@@ -192,31 +200,35 @@ end
       puts "Wagon has been detached from the train."
     end
   end
+
   # Перемещает поезд вперед по маршруту
   def move_train_forward
-  train = select_train
+    train = select_train
 
-  if train
-    if train.next_station
-      train.move_forward
-      puts "Train has been moved forward."
-    else
-      puts "Train is already at the last station on the route."
+    if train
+      if train.next_station
+        train.move_forward
+        puts "Train has been moved forward."
+      else
+        puts "Train is already at the last station on the route."
+      end
     end
   end
-end
-# Перемещает поезд назад по маршруту
-def move_train_backward
-  train = select_train
-  if train
-    if train.previous_station
-      train.move_backward
-      puts "Train has been moved backward."
-    else
-      puts "Train is already at the first station on the route."
+
+  # Перемещает поезд назад по маршруту
+  def move_train_backward
+    train = select_train
+
+    if train
+      if train.previous_station
+        train.move_backward
+        puts "Train has been moved backward."
+      else
+        puts "Train is already at the first station on the route."
+      end
     end
   end
-end
+
   # Выводит список станций и поездов на них
   def display_stations_and_trains
     @stations.each do |station|
@@ -227,10 +239,12 @@ end
       puts ""
     end
   end
-   # Находит станцию по имени
+
+  # Находит станцию по имени
   def find_station_by_name(name)
     @stations.find { |station| station.name == name }
   end
+
   # Выбирает поезд из массива по его номеру
   def select_train
     print "Enter the number of the train: "
@@ -244,7 +258,8 @@ end
 
     train
   end
-   # Выбирает маршрут из массива по его индексу
+
+  # Выбирает маршрут из массива по его индексу
   def select_route
     print "Enter the index of the route: "
     route_index = gets.chomp.to_i
@@ -257,7 +272,8 @@ end
 
     route
   end
-   # Добавляет станцию к маршруту
+
+  # Добавляет станцию к маршруту
   def add_station_to_route(route)
     loop do
       print "Enter the name of the station to add to the route (or 'done' to finish): "
