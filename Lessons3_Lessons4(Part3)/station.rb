@@ -1,10 +1,22 @@
+require_relative 'instance_counter'
+
 class Station
+  include InstanceCounter
+   @@stations = []
+
   attr_reader :name, :trains
 
   def initialize(name)
     @name = name
+    @@stations << self
     @trains = [] # Массив для хранения поездов, находящихся на станции
+    register_instance
   end
+
+  def self.all
+    @@stations
+  end
+
   # Принимает поезд на станцию
   def take_train(train)
     @trains << train

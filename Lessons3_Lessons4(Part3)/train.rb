@@ -1,12 +1,26 @@
+require_relative 'manufacturer'
+require_relative 'instance_counter'
+
 class Train
-  attr_reader :number, :type, :wagons, :speed, :current_station, :route
+  include Manufacturer
+  include InstanceCounter
+  @@trains = []
+  attr_accessor :number
+  attr_reader :type, :wagons, :speed, :current_station, :route
 
   def initialize(number, type)
     @number = number
     @type = type
     @wagons = [] # Массив для хранения вагонов, прицепленных к поезду
     @speed = 0 # Текущая скорость поезда
+    @@trains << self
+    register_instance
   end
+
+  def self.find(number)
+    @@trains.find { |train| train.number == number }
+  end
+
    # Увеличивает скорость поезда
   def speed_up(speed)
     @speed += speed
