@@ -1,7 +1,7 @@
 module Manufacturer
-  attr_accessor :manufacturer
+  attr_writer :manufacturer
 
-  def initialize(manufacturer)
-    @manufacturer = manufacturer
+  def manufacturer
+    @manufacturer
   end
 end

@@ -8,19 +8,19 @@ class Train
   attr_accessor :number
   attr_reader :type, :wagons, :speed, :current_station, :route
 
-  def initialize(number, type)
+  def initialize(number, type, manufacturer)
     @number = number
     @type = type
     @wagons = [] # Массив для хранения вагонов, прицепленных к поезду
     @speed = 0 # Текущая скорость поезда
     @@trains << self
     register_instance
+    self.manufacturer = manufacturer
   end
 
   def self.find(number)
     @@trains.find { |train| train.number == number }
   end
-
    # Увеличивает скорость поезда
   def speed_up(speed)
     @speed += speed
