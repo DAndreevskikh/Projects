@@ -7,20 +7,14 @@ class Station
 
   def initialize(name)
     @name = name.to_s
-    valid?
-    @trains = []
-  end
-
-  def valid?
     validate!
-    true
-  rescue
-    false
+    @trains = []
   end
 
   private
 
   def validate!
-    validate_presence('station name', name)
+    validate_presence('Station name', name)
+    validate_length('Station name', name, 1, 100)
   end
 end

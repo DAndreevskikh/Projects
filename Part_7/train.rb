@@ -8,23 +8,15 @@ class Train
   def initialize(number, type)
     @number = number
     @type = type
-    valid?
+    validate!
   end
-
-  def valid?
-   validate!
-  true
-rescue
-  false
-end
-
-
 
   private
 
   def validate!
     validate_presence('Train number', number)
     validate_presence('Train type', type)
-    validate_format('Train type', type.to_s, /^[a-z]+$/)
+    validate_format('Train number', number.to_s, /^[a-z0-9]+$/i)
+    validate_format('Train type', type.to_s, /^(passenger|cargo)$/i)
   end
 end
