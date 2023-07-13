@@ -1,17 +1,32 @@
 require_relative 'station'
+require_relative 'train'
 require_relative 'route'
+require_relative 'wagon'
+require_relative 'passenger_wagon'
+require_relative 'cargo_wagon'
 
-# Testing Route class
-puts "Creating an instance of Route"
+# Создаем станции
 station1 = Station.new("Station 1")
 station2 = Station.new("Station 2")
 station3 = Station.new("Station 3")
 
+# Создаем маршрут
 route = Route.new(station1, station2)
 
-puts "Start Station: #{route.start_station.name}"
-puts "End Station: #{route.end_station.name}"
-puts "Stations in the Route: #{route.stations.map(&:name).join(', ')}"
+# Добавляем станции в маршрут
+route.add_station(station3)
 
-route.delete_station(station2)
-puts "Stations in the Route after deleting a station: #{route.stations.map(&:name).join(', ')}"
+# Выводим информацию о станциях в маршруте
+puts "Stations in Route:"
+route.stations.each do |station|
+  puts "Station Name: #{station.name}"
+end
+
+# Удаляем станцию из маршрута
+route.remove_station(station3)
+
+# Выводим обновленную информацию о станциях в маршруте
+puts "Stations in Route after removal:"
+route.stations.each do |station|
+  puts "Station Name: #{station.name}"
+end

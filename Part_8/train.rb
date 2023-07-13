@@ -7,14 +7,31 @@ class Train
   include InstanceCounter
   include Validation
 
-  attr_reader :number, :type, :wagons, :route
+  @@trains = []
+  attr_accessor :number
+  attr_reader :type, :wagons, :speed, :current_station, :route
 
   def initialize(number, type)
     @number = number
     @type = type.to_sym
     @wagons = []
+    @speed = 0
+    @@trains << self
     validate!
     register_instance
+  end
+
+def self.find(number)
+    @@trains.find { |train| train.number == number }
+  end
+
+  def speed_up(speed)
+    @speed += speed
+  end
+
+  def break(speed)
+    @speed -= speed
+    @speed = 0 if @speed.negative?
   end
 
   def each_wagon(&block)
