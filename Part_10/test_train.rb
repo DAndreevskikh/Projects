@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'station'
 require_relative 'train'
 require_relative 'route'
@@ -8,7 +10,7 @@ require_relative 'cargo_wagon'
 # Создаем станции
 station1 = Station.new('Station 1')
 station2 = Station.new('Station 2')
-station3 = Station.new('Station 3')
+Station.new('Station 3')
 
 # Создаем поезд
 train = Train.new('123', :passenger)
@@ -48,7 +50,7 @@ train.detach_wagon
 
 # Устанавливаем маршрут для поезда
 route = Route.new(station1, station2)
-train.set_route(route)
+train.route = route
 
 # Выводим информацию о текущей, следующей и предыдущей станциях
 puts "Current Station: #{train.current_station.name}"
@@ -57,8 +59,8 @@ puts "Previous Station: #{train.previous_station&.name}"
 
 # Перемещаем поезд вперед и выводим текущую станцию
 train.move_forward
-puts "Current Station after moving forward: #{train.current_station.name}"
+puts "Current Station after moving forward: #{train.current_station&.name}"
 
 # Перемещаем поезд назад и выводим текущую станцию
 train.move_backward
-puts "Current Station after moving backward: #{train.current_station.name}"
+puts "Current Station after moving backward: #{train.current_station&.name}"

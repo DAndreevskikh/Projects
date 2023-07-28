@@ -21,7 +21,7 @@ class Train
     register_instance
   end
 
-def self.find(number)
+  def self.find(number)
     @@trains.find { |train| train.number == number }
   end
 

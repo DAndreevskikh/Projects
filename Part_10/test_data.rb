@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'train'
 require_relative 'wagon'
 require_relative 'station'
@@ -37,9 +39,9 @@ stations.each do |station|
 
     train.each_wagon do |wagon|
       if wagon.is_a?(PassengerWagon)
-        puts "  Wagon: #{wagon.type}, Free seats: #{wagon.free_seats}, Occupied seats: #{wagon.occupied_seats}"
+        puts "  Wagon: #{wagon.type}, Free seats: #{wagon.available_seats}, Occupied seats: #{wagon.occupied_seats}"
       elsif wagon.is_a?(CargoWagon)
-        puts "  Wagon: #{wagon.type}, Free volume: #{wagon.free_volume}, Occupied volume: #{wagon.occupied_volume}"
+        puts "  Wagon: #{wagon.type}, Free volume: #{wagon.available_volume}, Occupied volume: #{wagon.occupied_volume}"
       end
     end
   end

@@ -27,66 +27,58 @@ class Main
   end
 
   def create_train
-    begin
-      puts 'Enter the train number:'
-      number = gets.chomp
-      puts 'Enter the train type (passenger/cargo):'
-      type = gets.chomp
+    puts 'Enter the train number:'
+    number = gets.chomp
+    puts 'Enter the train type (passenger/cargo):'
+    type = gets.chomp
 
-      train = Train.new(number, type)
-      @trains << train
+    train = Train.new(number, type)
+    @trains << train
 
-      puts "Train created: Number - #{train.number}, Type - #{train.type}"
-    rescue => e
-      puts e
-    end
+    puts "Train created: Number - #{train.number}, Type - #{train.type}"
+  rescue StandardError => e
+    puts e
   end
 
   def create_station
-    begin
-      puts 'Enter the station name:'
-      name = gets.chomp
+    puts 'Enter the station name:'
+    name = gets.chomp
 
-      station = Station.new(name)
-      @stations << station
+    station = Station.new(name)
+    @stations << station
 
-      puts "Station created: #{station.name}"
-    rescue => e
-      puts e
-    end
+    puts "Station created: #{station.name}"
+  rescue StandardError => e
+    puts e
   end
 
   def create_route
-    begin
-      puts 'Enter the start station name:'
-      start_station_name = gets.chomp
-      puts 'Enter the end station name:'
-      end_station_name = gets.chomp
+    puts 'Enter the start station name:'
+    start_station_name = gets.chomp
+    puts 'Enter the end station name:'
+    end_station_name = gets.chomp
 
-      start_station = find_or_create_station(start_station_name)
-      end_station = find_or_create_station(end_station_name)
+    start_station = find_or_create_station(start_station_name)
+    end_station = find_or_create_station(end_station_name)
 
-      route = Route.new(start_station, end_station)
-      @routes << route
+    route = Route.new(start_station, end_station)
+    @routes << route
 
-      puts "Route created: Start station - #{route.stations.first.name}, End station - #{route.stations.last.name}"
-    rescue => e
-      puts e
-    end
+    puts "Route created: Start station - #{route.stations.first.name}, End station - #{route.stations.last.name}"
+  rescue StandardError => e
+    puts e
   end
 
   def create_wagon
-    begin
-      puts 'Enter the wagon type (passenger/cargo):'
-      type = gets.chomp
+    puts 'Enter the wagon type (passenger/cargo):'
+    type = gets.chomp
 
-      wagon = Wagon.new(type)
-      @wagons << wagon
+    wagon = Wagon.new(type)
+    @wagons << wagon
 
-      puts "Wagon created: Type - #{wagon.type}"
-    rescue => e
-      puts e
-    end
+    puts "Wagon created: Type - #{wagon.type}"
+  rescue StandardError => e
+    puts e
   end
 
   def occupy_seat(wagon_number)
@@ -97,7 +89,7 @@ class Main
       wagon.occupy_seat
       puts "A seat has been occupied in wagon #{wagon.number}."
     else
-      puts "This wagon is not a passenger wagon."
+      puts 'This wagon is not a passenger wagon.'
     end
   end
 
@@ -109,7 +101,7 @@ class Main
       wagon.occupy_volume(volume)
       puts "#{volume} units of volume have been occupied in wagon #{wagon.number}."
     else
-      puts "This wagon is not a cargo wagon."
+      puts 'This wagon is not a cargo wagon.'
     end
   end
 
@@ -126,7 +118,7 @@ class Main
           end
         end
       end
-      puts ""
+      puts ''
     end
   end
 
@@ -170,27 +162,27 @@ class Main
     when 11
       exit
     else
-      puts "Invalid action. Please try again."
+      puts 'Invalid action. Please try again.'
     end
   end
 
   def assign_route_to_train
     if @trains.empty?
-      puts "No trains available. Please create a train first."
+      puts 'No trains available. Please create a train first.'
       return
     end
 
     if @routes.empty?
-      puts "No routes available. Please create a route first."
+      puts 'No routes available. Please create a route first.'
       return
     end
 
-    puts "Available trains:"
+    puts 'Available trains:'
     @trains.each do |train|
       puts "Train: #{train.number}, Type: #{train.type}"
     end
 
-    print "Enter the number of the train: "
+    print 'Enter the number of the train: '
     train_number = gets.chomp
 
     train = @trains.find { |t| t.number == train_number }
@@ -199,71 +191,71 @@ class Main
       return
     end
 
-    puts "Available routes:"
+    puts 'Available routes:'
     @routes.each_with_index do |route, index|
       puts "#{index + 1}. #{route.stations.first.name} - #{route.stations.last.name}"
     end
 
-    print "Enter the index of the route: "
+    print 'Enter the index of the route: '
     route_index = gets.chomp.to_i - 1
 
     route = @routes[route_index]
     train.set_route(route)
 
-    puts "Route has been assigned to the train."
+    puts 'Route has been assigned to the train.'
   end
 
   def attach_wagon_to_train
     train = select_train
 
-    if train
-      if train.type == :passenger
-        wagon = create_passenger_wagon
-      elsif train.type == :cargo
-        wagon = create_cargo_wagon
-      end
+    return unless train
 
-      if wagon
-        train.attach_wagon(wagon)
-        puts "#{wagon.type.capitalize} wagon has been attached to the train."
-      else
-        puts "Invalid wagon type."
-      end
+    if train.type == :passenger
+      wagon = create_passenger_wagon
+    elsif train.type == :cargo
+      wagon = create_cargo_wagon
+    end
+
+    if wagon
+      train.attach_wagon(wagon)
+      puts "#{wagon.type.capitalize} wagon has been attached to the train."
+    else
+      puts 'Invalid wagon type.'
     end
   end
 
   def detach_wagon_from_train
     train = select_train
 
-    if train
-      train.detach_wagon
-      puts "Wagon has been detached from the train."
-    end
+    return unless train
+
+    train.detach_wagon
+    puts 'Wagon has been detached from the train.'
   end
 
   def move_train_forward
     train = select_train
 
-    if train
-      if train.next_station
-        train.move_forward
-        puts "Train has been moved forward."
-      else
-        puts "Train is already at the last station on the route."
-      end
+    return unless train
+
+    if train.next_station
+      train.move_forward
+      puts 'Train has been moved forward.'
+    else
+      puts 'Train is already at the last station on the route.'
     end
   end
 
   def move_train_backward
     train = select_train
 
-    if train
-      if train.previous_station
-        train.move_backward
-        puts "Train has been moved backward."
-      else
-        puts "Train is already at the first station on the route."
-      end
+    return unless train
+
+    if train.previous_station
+      train.move_backward
+      puts 'Train has been moved backward.'
+    else
+      puts 'Train is already at the first station on the route.'
     end
   end
 
@@ -272,12 +264,12 @@ class Main
   end
 
   def select_train
-    print "Enter the number of the train: "
+    print 'Enter the number of the train: '
     train_number = gets.chomp
     train = @trains.find { |train| train.number == train_number }
 
     unless train
-      puts "Train not found."
+      puts 'Train not found.'
       return nil
     end
 
@@ -285,13 +277,13 @@ class Main
   end
 
   def create_passenger_wagon
-    print "Enter the total number of seats in the wagon: "
+    print 'Enter the total number of seats in the wagon: '
     total_seats = gets.chomp.to_i
     PassengerWagon.new(total_seats)
   end
 
   def create_cargo_wagon
-    print "Enter the total volume of the wagon: "
+    print 'Enter the total volume of the wagon: '
     total_volume = gets.chomp.to_f
     CargoWagon.new(total_volume)
   end

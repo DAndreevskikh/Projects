@@ -19,12 +19,10 @@ class Route
   def remove_station(station)
     raise "Can't remove start station from the route." if station == stations.first
     raise "Can't remove end station from the route." if station == stations.last
-    raise "Station not found in the route." unless @stations.include?(station)
+    raise 'Station not found in the route.' unless @stations.include?(station)
 
-  @stations.delete(station)
-end
-
-
+    @stations.delete(station)
+  end
 
   private
 
