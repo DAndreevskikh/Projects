@@ -1,25 +1,44 @@
 # frozen_string_literal: true
 
 require_relative 'wagon'
+require_relative 'validation'
+require_relative 'accessors'
 
 class PassengerWagon < Wagon
-  attr_reader :total_seats, :occupied_seats
+  include Validation
+  include Accessors
 
-  def initialize(total_seats)
+  attr_accessor_with_history :number, :seats, :occupied_seats
+
+  validate :number, :presence
+  validate :seats, :presence
+  validate :seats, :positive_integer
+
+  def initialize(seats)
     super(:passenger)
-    @total_seats = total_seats
+    @seats = seats.to_i
     @occupied_seats = 0
+    validate!
   end
 
-  def available_seats
-    @total_seats - @occupied_seats
+  def details
+    "Wagon: Type: #{type}, Number: #{number}, Seats: #{seats}, Occupied Seats: #{occupied_seats}"
   end
 
-  def occupy_seat
-    @occupied_seats += 1 if @occupied_seats < @total_seats
+  def total_seats
+    @seats
   end
 
   def free_seats
-    @total_seats - @occupied_seats
+    @seats - @occupied_seats
+  end
+
+  def take_seat(count = 1)
+    if occupied_seats + count <= @seats
+      self.occupied_seats += count
+      puts "#{count} seat(s) has been taken. Remaining seats: #{@seats - occupied_seats}"
+    else
+      puts "Not enough available seats. Remaining seats: #{@seats - occupied_seats}"
+    end
   end
 end

@@ -2,6 +2,7 @@
 
 require_relative 'validation'
 require_relative 'accessors'
+require_relative 'station'
 
 class Route
   include Validation
@@ -28,7 +29,9 @@ class Route
     @stations.delete(station)
   end
 
-  protected
+  def details
+    "Route: #{start_station.name} -> #{end_station.name}"
+  end
 
   def validate!
     validate_type('Start station', start_station, Station)

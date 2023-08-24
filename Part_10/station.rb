@@ -9,17 +9,31 @@ class Station
   include Validation
   include Accessors
 
-  attr_accessor_with_history :trains
-  strong_attr_accessor :name, String
+  attr_accessor_with_history :trains, :name
 
   validate :name, :presence
   validate :name, :length, 1, 100
 
+  class << self
+    attr_accessor :all_stations
+  end
+
+  self.all_stations = []
+
   def initialize(name)
     self.name = name
     @trains = []
+    self.class.all_stations << self
     validate!
     register_instance
+  end
+
+  def self.all
+    all_stations
+  end
+
+  def name_history
+    @name_history || []
   end
 
   def each_train(&block)
@@ -28,6 +42,10 @@ class Station
 
   def add_train(train)
     @trains << train
+  end
+
+  def details
+    "Station: #{@name}, Trains: #{@trains}"
   end
 
   def remove_train(train)

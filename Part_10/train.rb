@@ -4,6 +4,7 @@ require_relative 'validation'
 require_relative 'manufacturer'
 require_relative 'instance_counter'
 require_relative 'accessors'
+require_relative 'wagon'
 
 class Train
   include Manufacturer
@@ -11,7 +12,6 @@ class Train
   include Validation
   include Accessors
 
-  @trains = []
   attr_accessor_with_history :number
   strong_attr_accessor :type, Symbol
   attr_reader :wagons, :speed, :current_station, :route
@@ -31,21 +31,26 @@ class Train
     register_instance
   end
 
-  def self.all_trains
-    @trains
+  class << self
+    def all_trains
+      @all_trains ||= []
+    end
+
+    def find(number)
+      @all_trains.find { |train| train.number == number }
+    end
   end
 
-  def self.find(number)
-    @trains.find { |train| train.number == number }
+  def add_wagon(wagon)
+    wagons << wagon
   end
 
   def speed_up(speed)
     @speed += speed
   end
 
-  def break(speed)
-    @speed -= speed
-    @speed = 0 if @speed.negative?
+  def brake(speed)
+    @speed = [@speed - speed, 0].max
   end
 
   def each_wagon(&block)
@@ -61,6 +66,10 @@ class Train
     @wagons.pop
   end
 
+  def remove_wagon(wagon)
+    @wagons.delete(wagon) if @speed.zero?
+  end
+
   def route=(route)
     @route = route
     @current_station&.remove_train(self)
@@ -70,13 +79,10 @@ class Train
   end
 
   def move_forward
-    return unless next_station
-    return unless current_station.is_a?(Station)
+    return unless next_station && current_station.is_a?(Station)
 
     current_station.remove_train(self)
-    current_index = @route.stations.index(@current_station)
-    next_index = current_index + 1
-
+    next_index = @route.stations.index(@current_station) + 1
     return unless next_index < @route.stations.size
 
     @current_station = @route.stations[next_index]
@@ -84,45 +90,38 @@ class Train
   end
 
   def move_backward
-    return unless previous_station
-    return unless current_station.is_a?(Station)
+    return unless previous_station && current_station.is_a?(Station)
 
     current_station.remove_train(self)
-    current_index = @route.stations.index(@current_station)
-    previous_index = current_index - 1
+    prev_index = @route.stations.index(@current_station) - 1
+    return unless prev_index >= 0
 
-    return unless previous_index >= 0
-
-    @current_station = @route.stations[previous_index]
+    @current_station = @route.stations[prev_index]
     current_station.add_train(self)
   end
 
   def previous_station
     return unless @route
 
-    current_index = @route.stations.index(@current_station)
-    prev_index = current_index - 1
-    return unless prev_index >= 0
-
-    @route.stations[prev_index]
+    prev_index = @route.stations.index(@current_station) - 1
+    @route.stations[prev_index] if prev_index >= 0
   end
 
   def next_station
     return unless @route
 
-    current_index = @route.stations.index(@current_station)
-    next_index = current_index + 1
-    return unless next_index < @route.stations.size
+    next_index = @route.stations.index(@current_station) + 1
+    @route.stations[next_index] if next_index < @route.stations.size
+  end
 
-    @route.stations[next_index]
+  def details
+    "Train: #{@number}, Type: #{@type}, Wagons: #{wagons.size}"
   end
 
   private
 
   def validate_wagon_type(wagon)
-    return if wagon.type == type
-
-    raise 'Wagon type does not match train type.'
+    raise 'Wagon type does not match train type.' unless wagon.type.to_sym == type
   end
 
   def validate!

@@ -1,25 +1,43 @@
 # frozen_string_literal: true
 
 require_relative 'wagon'
+require_relative 'validation'
+require_relative 'accessors'
 
 class CargoWagon < Wagon
-  attr_reader :total_volume, :occupied_volume
+  include Validation
+  include Accessors
 
-  def initialize(total_volume)
-    super(:cargo)
-    @total_volume = total_volume
-    @occupied_volume = 0
+  attr_accessor_with_history :number, :capacity, :occupied_capacity
+
+  validate :number, :presence
+  validate :capacity, :presence
+
+  def initialize(capacity)
+    super('cargo')
+    @occupied_capacity = 0.0
+    @capacity = capacity
+    validate!
+  rescue StandardError => e
+    puts e.message
   end
 
-  def available_volume
-    @total_volume - @occupied_volume
+  def take_volume(volume)
+    available_capacity = capacity - occupied_capacity.to_f
+    raise "Not enough capacity. Available: #{available_capacity}" unless volume <= available_capacity
+
+    self.occupied_capacity += volume
   end
 
-  def occupy_volume(volume)
-    @occupied_volume += volume if @occupied_volume + volume <= @total_volume
+  def total_volume
+    @capacity
   end
 
   def free_volume
-    @total_volume - @occupied_volume
+    @capacity - @occupied_capacity
+  end
+
+  def details
+    "Wagon: Type: #{type}, Number: #{number}, Capacity: #{capacity}, Occupied Volume: #{occupied_capacity}"
   end
 end

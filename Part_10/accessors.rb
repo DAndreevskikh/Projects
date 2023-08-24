@@ -12,8 +12,16 @@ module Accessors
 
     def strong_attr_accessor(name, type)
       define_history_accessors(name)
+
+      define_method(name) { instance_variable_get("@#{name}") }
+      define_method("#{name}_history") { instance_variable_get("@#{name}_history") || [] }
+
       define_method("#{name}=") do |value|
         raise TypeError, "Invalid type. Expected #{type}" unless value.is_a?(type)
+
+        history = instance_variable_get("@#{name}_history") || []
+        history << instance_variable_get("@#{name}") unless history.include?(instance_variable_get("@#{name}"))
+        instance_variable_set("@#{name}_history", history)
 
         instance_variable_set("@#{name}", value)
       end
